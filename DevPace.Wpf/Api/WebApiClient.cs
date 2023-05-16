@@ -1,14 +1,11 @@
 ﻿using Domain.Entities;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Http.Json;
 
 namespace DevPace.Wpf.Api
 {
@@ -47,6 +44,19 @@ namespace DevPace.Wpf.Api
         public void Dispose()
         {
             client.Dispose();
+        }
+
+        public async Task UpdateCustomer(Customer customer, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await client.PutAsJsonAsync<Customer>($"{CUSTOMERS_RELATIVE_PATH}", customer, cancellationToken);
+                
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

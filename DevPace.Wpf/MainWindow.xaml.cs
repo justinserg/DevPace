@@ -1,18 +1,7 @@
 ﻿using DevPace.Wpf.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Domain.Entities;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DevPace.Wpf
 {
@@ -21,13 +10,26 @@ namespace DevPace.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        public CustomersVM Customers = new CustomersVM();
+        public CustomersList Customers = new CustomersList();
 
         public MainWindow()
         {
             InitializeComponent();
             Customers.LoadData(1);
             customersGrid.ItemsSource = Customers;
+        }
+
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+
+            if (button != null)
+            {
+                CustomerVM customer = (CustomerVM)button.DataContext;
+                EditWindow window = new EditWindow(customer);
+                window.ShowDialog();
+            }
+
         }
     }
 }
