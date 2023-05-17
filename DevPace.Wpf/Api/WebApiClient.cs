@@ -6,6 +6,10 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http.Json;
+using System.Collections.Specialized;
+using System.Windows.Media;
+using System.Collections;
+using System.Windows.Controls;
 
 namespace DevPace.Wpf.Api
 {
@@ -24,11 +28,12 @@ namespace DevPace.Wpf.Api
 
         
 
-        public async Task<IEnumerable<Customer>> GetCustomersAsync(int page = 1, CancellationToken cancellationToken = default)
+        public async Task<Pagging> GetCustomersAsync(int page, Customer customer, CancellationToken cancellationToken = default)
         {
             try
             {
-                var response = await client.GetFromJsonAsync<IEnumerable<Customer>>($"{CUSTOMERS_RELATIVE_PATH}/{page}", cancellationToken);
+                var query = GetQueryFromCustomer(customer);
+                var response = await client.GetFromJsonAsync<Pagging>($"{CUSTOMERS_RELATIVE_PATH}/{page}?{query}", cancellationToken);
                 if (response != null)
                 {
                     return response;
@@ -38,7 +43,23 @@ namespace DevPace.Wpf.Api
             {
 
             }
-            return new List<Customer>();
+            return new Pagging();
+        }
+
+        private string GetQueryFromCustomer(Customer customer)
+        {
+            NameValueCollection queryString = System.Web.HttpUtility.ParseQueryString(string.Empty);
+
+            if (!string.IsNullOrWhiteSpace(customer.CompanyName))
+                queryString.Add(nameof(customer.CompanyName), customer.CompanyName);
+            if (!string.IsNullOrWhiteSpace(customer.Name))
+                queryString.Add(nameof(customer.Name), customer.Name);
+            if (!string.IsNullOrWhiteSpace(customer.Email))
+                queryString.Add(nameof(customer.Email), customer.Email);
+            if (!string.IsNullOrWhiteSpace(customer.Phone))
+                queryString.Add(nameof(customer.Phone), customer.Phone);
+
+            return queryString.ToString();
         }
 
         public void Dispose()
@@ -57,6 +78,27 @@ namespace DevPace.Wpf.Api
             {
 
             }
+        }
+
+        public async Task<Customer> GetCustomerByNameAsync(string name, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await client.GetFromJsonAsync<Customer>($"{CUSTOMERS_RELATIVE_PATH}?name={name}", cancellationToken);
+                if (response != null)
+                {
+                    return response;
+                }
+            }
+            catch(HttpRequestException exception)
+            {
+                if (exception.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return null;
+                
+                throw;
+            }
+            
+            return null;
         }
     }
 }

@@ -13,12 +13,14 @@ namespace DevPace.Wpf
     public partial class EditWindow : Window
     {
         private CustomerVM _customer;
+        private string _originalCustomerName; 
 
         public EditWindow(CustomerVM customer)
         {
             InitializeComponent();
             _customer = customer;
             grid.DataContext = _customer;
+            _originalCustomerName = _customer.Name;
         }
 
         private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
@@ -32,6 +34,14 @@ namespace DevPace.Wpf
                     Name = _customer.Name,
                     Phone = _customer.Phone
                 };
+
+                var response = await client.GetCustomerByNameAsync(_customer.Name);
+                if (response != null && response.Name != _originalCustomerName)
+                {
+                    MessageBox.Show("Name must be unique");
+                    return;
+                }
+                
 
                 await client.UpdateCustomer(targetCustomer);
                 Close();

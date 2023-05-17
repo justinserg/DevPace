@@ -1,7 +1,7 @@
 ﻿using DevPace.Wpf.Api;
 using Domain.Entities;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace DevPace.Wpf.ViewModels
 {
@@ -12,25 +12,44 @@ namespace DevPace.Wpf.ViewModels
 
         }
 
-        public async void LoadData(int page = 1)
-        {
-            using (WebApiClient client = new WebApiClient())
-            {
-                this.ClearItems();
-                var result = new List<Customer>(await client.GetCustomersAsync());
+        public int Page { get; set; }
+        public int PagesCount { get; set; }
 
-                foreach (var item in result)
+        public async Task LoadData(int page = 1, Customer customer = null)
+        {
+            if (customer == null)
+            {
+                customer = new Customer();
+            }
+            using WebApiClient client = new WebApiClient();
+            ClearItems();
+            var result = await client.GetCustomersAsync(page, customer);
+
+            Page = result.Number;
+            PagesCount = result.Count;
+
+            if (result.Customers == null)
+                return;
+
+            foreach (var item in result.Customers)
+            {
+                this.Add(new CustomerVM
                 {
-                    this.Add(new CustomerVM
-                    {
-                        Name = item.Name,
-                        Phone = item.Phone,
-                        CompanyName = item.CompanyName,
-                        Email = item.Email
-                    });
-                }
+                    Name = item.Name,
+                    Phone = item.Phone,
+                    CompanyName = item.CompanyName,
+                    Email = item.Email
+                });
             }
 
+        }
+
+        public Task Search(Customer searchObject)
+        {
+            using WebApiClient client = new WebApiClient();
+            ClearItems();
+
+            return null;
         }
     }
 }

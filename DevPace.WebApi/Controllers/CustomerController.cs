@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Services.Abstractions;
 
 namespace DevPace.WebApi.Controllers
@@ -15,11 +16,12 @@ namespace DevPace.WebApi.Controllers
             _customerService = customerService;
 
         [HttpGet("{page:int}")]
-        public async Task<IActionResult> GetCustomers(int page, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetCustomers(int page = 1, [FromQuery] Customer customer = null, CancellationToken cancellationToken = default)
         {
             try
             {
-                var customers = await _customerService.GetCustomers(cancellationToken);
+                if (customer == null) customer = new Customer();
+                var customers = await _customerService.GetCustomers(page, customer, cancellationToken);
 
                 return Ok(customers);
             }

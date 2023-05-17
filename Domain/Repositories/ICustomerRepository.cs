@@ -5,7 +5,7 @@ namespace Domain.Repositories
 {
     public interface ICustomerRepository
     {
-        Task<IEnumerable<Customer>> GetCustomers(CancellationToken cancellationToken = default);
+        Task<Pagging> GetCustomers(int page, Customer customer, CancellationToken cancellationToken = default);
         Task<Customer> GetByNameAsync(string name, CancellationToken cancellationToken = default);
         void Insert(Customer customer);
         void Remove(Customer customer);

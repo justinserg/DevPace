@@ -11,9 +11,9 @@ namespace Services
 
         public CustomerService(ICustomerRepository customerRepository) => _customerRespository = customerRepository;
 
-        public async Task<IEnumerable<Customer>> GetCustomers(CancellationToken cancellationToken = default)
+        public async Task<Pagging> GetCustomers(int page, Customer customer, CancellationToken cancellationToken = default)
         {
-            var customers = await _customerRespository.GetCustomers(cancellationToken);
+            var customers = await _customerRespository.GetCustomers(page, customer, cancellationToken);
             return customers;
         }
 

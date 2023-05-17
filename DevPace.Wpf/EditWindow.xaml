@@ -34,7 +34,11 @@
             <TextBox.Text>
                 <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
-                        <local1:LengthValidationRule MaxLength="50" Name="Customer Name"/>
+                        <local1:NameValidationRule MaxLength="50">
+                            <local1:NameValidationRule.Wrapper>
+                                <local1:NameWrapper Origin="{Binding Path=Name}"/>
+                            </local1:NameValidationRule.Wrapper>
+                        </local1:NameValidationRule>
                     </Binding.ValidationRules>
                 </Binding>
             </TextBox.Text>
@@ -64,7 +68,7 @@
             <TextBox.Text>
                 <Binding Path="Email" UpdateSourceTrigger="PropertyChanged">
                     <Binding.ValidationRules>
-                        <local1:LengthValidationRule MaxLength="320" Name="Email"/>
+                        <local1:EmailValidationRule MaxLength="320"/>
                     </Binding.ValidationRules>
                 </Binding>
             </TextBox.Text>
